@@ -1,6 +1,9 @@
 # Custom
 *.DS_store
 *.pdf
+*data/
+*.csv
+*.xlsx
 
 # pycharm
 *.idea/
