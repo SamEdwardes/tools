@@ -1,5 +1,9 @@
 # Custom
 *.DS_store
+*.pdf
+
+# pycharm
+*.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
