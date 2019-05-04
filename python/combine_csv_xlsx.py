@@ -16,12 +16,13 @@ import numpy as np
 import os
 import itertools
 
-# TODO check why test3.xlsx sheet 2 is showing up in two final dataframes (its b/c how we are filtering...)
 # user input
-export_results = True
+export_results = False
 
 # create an empty list for the dataframes
 df_list = []
+df_file_list = []
+df_tab_list = []
 
 # loop through each file in the same directory as script and import dataframe
 for file in os.listdir():
@@ -30,6 +31,8 @@ for file in os.listdir():
         temp_df["se.source.file"] = file
         temp_df["se.source.tab"] = np.NaN
         df_list.append(temp_df)
+        df_file_list.append(file)
+        df_tab_list.append(np.NaN)
         del temp_df
     elif ".xlsx" in file:
         temp_xls = pd.ExcelFile(file)
@@ -38,6 +41,8 @@ for file in os.listdir():
             temp_df["se.source.file"] = file
             temp_df["se.source.tab"] = sheet
             df_list.append(temp_df)
+            df_file_list.append(file)
+            df_tab_list.append(sheet)
             del temp_df
         del temp_xls
     else:
@@ -46,9 +51,6 @@ for file in os.listdir():
 # clean the headers of each dataframe
 for df in df_list:
     df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('(', '').str.replace(')', '')
-
-# stack all df on top of each other
-df_all = (pd.concat(df_list))
 
 # get a list that contains a list of column names for each df
 df_columns_list = []
@@ -59,19 +61,30 @@ for df in df_list:
 df_columns_list.sort()
 df_columns_list = (list(df_columns_list for df_columns_list,_ in itertools.groupby(df_columns_list)))
 
-# filter all df for each unique set of column names
+# iterate through unique headers, combining dataframes when they match the header
 df_final_list = []
 for cols in df_columns_list:
-    df_final_list.append(df_all[cols].dropna(thresh=len(cols)-1).reset_index(drop=True))
+    temp_df_list = []
+    for df in df_list:
+        if list(df.columns) == cols:
+            temp_df_list.append(df)
+        else:
+            continue
+    df_final_list.append(pd.concat(temp_df_list))
+    del temp_df_list
 
-# print final results
-print("\n###############\nFINAL DATA FRAMES\n###############")
+# print results
+print("\n###############\nRESULTS\n###############")
+print("\n" + str(len(df_list))+" dataframes were identified: ")
+df_dict = {"file.name": df_file_list, "tab.name": df_tab_list}
+print(pd.DataFrame(data=df_dict))
+print("\nThe dataframes were combined into " + str(len(df_final_list)) + " unique dataframes:\n")
 for df in df_final_list:
-    print("\n")
     print(df)
-print("\n###############\nALL DATA FRAMES\n###############")
-print(df_all)
-print("\n###############\nORIGINAL DATA FRAMES\n###############")
+    print("\n")
+
+# print original dataframes
+print("\n\n###############\nORIGINAL DATA FRAMES\n###############")
 for df in df_list:
     print("\n")
     print(df)
@@ -84,13 +97,8 @@ if export_results:
         print()
         iteration = iteration + 1
         df.to_csv(file_name, index=False)
+    print("\n\n###############\nEXPORT STATUS\n###############")
     print("\nProgram complete: reuslts exported")
 else:
+    print("\n\n###############\nEXPORT STATUS\n###############")
     print("\nProgram complete: results not exported")
-
-
-    print()
-
-
-
-
