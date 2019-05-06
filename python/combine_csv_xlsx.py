@@ -19,6 +19,14 @@ import itertools
 # user input
 export_results = False
 
+# ask for user input
+user_input_export_results = input('Do you want to export the results? (y/n): ')
+if user_input_export_results.lower().strip()[0] == 'y':
+    export_results = True
+else:
+    export_results = False
+
+
 # create an empty list for the dataframes
 df_list = []
 df_file_list = []
@@ -80,14 +88,14 @@ df_dict = {"file.name": df_file_list, "tab.name": df_tab_list}
 print(pd.DataFrame(data=df_dict))
 print("\nThe dataframes were combined into " + str(len(df_final_list)) + " unique dataframes:\n")
 for df in df_final_list:
-    print(df)
+    print(df.head())
     print("\n")
 
 # print original dataframes
 print("\n\n###############\nORIGINAL DATA FRAMES\n###############")
 for df in df_list:
     print("\n")
-    print(df)
+    print(df.head())
 
 # export dataframes to csv
 iteration = 1
@@ -102,3 +110,6 @@ if export_results:
 else:
     print("\n\n###############\nEXPORT STATUS\n###############")
     print("\nProgram complete: results not exported")
+
+#keep the window open until the user presses enter
+input('\nPress any key to close the program.')
