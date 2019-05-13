@@ -16,16 +16,8 @@ import numpy as np
 import os
 import itertools
 
-# user input
+# user input defualt
 export_results = False
-
-# ask for user input
-user_input_export_results = input('Do you want to export the results? (y/n): ')
-if user_input_export_results.lower().strip()[0] == 'y':
-    export_results = True
-else:
-    export_results = False
-
 
 # create an empty list for the dataframes
 df_list = []
@@ -90,6 +82,13 @@ print("\nThe dataframes were combined into " + str(len(df_final_list)) + " uniqu
 for df in df_final_list:
     print(df.head())
     print("\n")
+
+# ask for user input
+user_input_export_results = input('Do you want to export the results? (y/n): ')
+if user_input_export_results.lower().strip()[0] == 'y':
+    export_results = True
+else:
+    export_results = False
 
 # print original dataframes
 print("\n\n###############\nORIGINAL DATA FRAMES\n###############")
